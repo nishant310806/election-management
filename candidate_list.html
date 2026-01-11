@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+Candidates | {{ election.title }}
+{% endblock %}
+
+{% block content %}
+
+<!-- Election Header -->
+<div class="mb-4">
+    <h2 class="fw-bold">{{ election.title }}</h2>
+    <p class="text-muted">{{ election.description }}</p>
+</div>
+
+<!-- Candidates Grid -->
+<div class="row">
+    {% for candidate in candidates %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body d-flex flex-column">
+
+                    <!-- Candidate Name -->
+                    <h5 class="fw-bold mb-2">
+                        {{ candidate.name }}
+                    </h5>
+
+                    <!-- Manifesto -->
+                    <p class="text-muted small mb-3">
+                        {{ candidate.manifesto|default:"No manifesto provided." }}
+                    </p>
+
+                    <!-- Footer Section -->
+                    <div class="mt-auto">
+
+                        <!-- Vote Count -->
+                        <div class="mb-3">
+                            <span class="badge bg-secondary">
+                                Votes: {{ candidate.votes }}
+                            </span>
+                        </div>
+
+                        <!-- Vote Button Logic -->
+                        {% if has_voted %}
+                            <button class="btn btn-secondary w-100" disabled>
+                                Vote Cast
+                            </button>
+                        {% else %}
+                            <form method="post"
+                                  action="{% url 'cast_vote' candidate.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn btn-success w-100">
+                                    Cast Vote
+                                </button>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">
+            No approved candidates available for this election.
+        </p>
+    {% endfor %}
+</div>
+
+<!-- Back Button -->
+<a href="{% url 'election_list' %}" class="btn btn-link mt-3">
+    ← Back to Elections
+</a>
+
+{% endblock %}
